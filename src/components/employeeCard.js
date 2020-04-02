@@ -12,7 +12,6 @@ function EmployeeCard(props) {
         <p>{props.email}</p>
         <p>{props.phone}</p>
       </div>
-      <hr></hr>
     </div>
   );
 }
