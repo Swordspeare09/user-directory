@@ -1,26 +1,42 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { Component } from 'react';
 import './App.css';
+import API from "./utils/api";
+import EmployeeCard from "./components/employeeCard";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+//Holds the newly fetched data for storing it inot the employee list using set state
+var tempArray;
+
+class App extends Component {
+
+  state = {
+
+    employeeList: []
+  };
+
+  componentDidMount() {
+
+    API.getEmployees()
+      .then(res => (tempArray = res.data.results))
+      .then(() => this.setState({ employeeList: tempArray }))
+      .catch(error => console.log(error));
+
+  }
+
+  render() {
+    return (
+      <div>
+      
+      {this.state.employeeList.map(
+        employee => <EmployeeCard 
+          firstName={employee.name.first} 
+          lastName={employee.name.last}
+          email={employee.email} 
+          phone={employee.phone} 
+          src={employee.picture.medium}
+                      />)}
     </div>
-  );
+    );
+  }
 }
 
 export default App;
