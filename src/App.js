@@ -25,6 +25,8 @@ class App extends Component {
   render() {
     return (
       <div>
+
+        <h1 className ="title">Welcome to the Employee Directory</h1>
       
       {this.state.employeeList.map(
         employee => <EmployeeCard 
