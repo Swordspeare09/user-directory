@@ -1,44 +1,79 @@
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import './App.css';
 import API from "./utils/api";
 import EmployeeCard from "./components/employeeCard";
+import SearchBar from "./components/SearchBar";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 
 //Holds the newly fetched data for storing it inot the employee list using set state
 var tempArray;
 
-class App extends Component {
+function App () {
 
-  state = {
+  const [employees, setEmployees] = useState([]);
 
-    employeeList: []
-  };
 
-  componentDidMount() {
+  useEffect(() => {
 
     API.getEmployees()
-      .then(res => (tempArray = res.data.results))
-      .then(() => this.setState({ employeeList: tempArray }))
-      .catch(error => console.log(error));
+      .then((res) => (tempArray = res.data.results))
+      .then(() => setEmployees(tempArray))
+      .catch((error) => console.log(error));
+  }, [])
 
-  }
+  const getGender = (gender) => {
+    return tempArray.filter((employee) => employee.gender === gender);
+  };
 
-  render() {
-    return (
-      <div>
+  const searchMales = () =>
+    getGender("male").map((employee) => (
+      <EmployeeCard
+        key={employee.name.first + employee.name.last}
+        firstName={employee.name.first}
+        lastName={employee.name.last}
+        email={employee.email}
+        phone={employee.phone}
+        src={employee.picture.medium}
+      />
+    ));
 
-        <h1 className ="title">Welcome to the Employee Directory</h1>
-      
-      {this.state.employeeList.map(
-        employee => <EmployeeCard 
-          firstName={employee.name.first} 
+    const searchFemales = () =>
+      getGender("female").map((employee) => (
+        <EmployeeCard
+          key={employee.name.first + employee.name.last}
+          firstName={employee.name.first}
           lastName={employee.name.last}
-          email={employee.email} 
-          phone={employee.phone} 
+          email={employee.email}
+          phone={employee.phone}
           src={employee.picture.medium}
-                      />)}
-    </div>
+        />
+      ));
+
+      const emptySearch = () =>
+        employees.map((employee) => (
+          <EmployeeCard
+            key={employee.name.first + employee.name.last}
+            firstName={employee.name.first}
+            lastName={employee.name.last}
+            email={employee.email}
+            phone={employee.phone}
+            src={employee.picture.medium}
+          />
+        ));
+
+
+ 
+    return (
+      <Router>
+        <h1> Welcome to The Employee Directory</h1>
+        <SearchBar />
+
+        <Route exact path="/" component={emptySearch}/>
+        <Route exact path="/employees/male" component={searchMales}/>
+        <Route exact path="/employees/female" component={searchFemales} />
+
+      </Router>
     );
-  }
 }
 
 export default App;
